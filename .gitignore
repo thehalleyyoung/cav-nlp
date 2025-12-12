@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.out
+
+# CEGIS results (can be large)
+cegis_results/
+arxiv_corpus/
+
+# Lean build artifacts
+.lake/
+lake-packages/
+build/
+*.olean
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Paper downloads
+arxiv_papers/
+*.pdf
+
+# Deprecated files
+deprecated/

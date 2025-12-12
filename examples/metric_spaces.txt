@@ -1,0 +1,38 @@
+Definition 1.1 (Metric Space). A metric space is a pair (X, d) where X is a set 
+and d: X × X → ℝ is a function satisfying the following axioms:
+1. Non-negativity: d(x,y) ≥ 0 for all x, y ∈ X
+2. Identity of indiscernibles: d(x,y) = 0 if and only if x = y
+3. Symmetry: d(x,y) = d(y,x) for all x, y ∈ X
+4. Triangle inequality: d(x,z) ≤ d(x,y) + d(y,z) for all x, y, z ∈ X
+
+Definition 1.2 (Open Ball). Let (X, d) be a metric space. For x ∈ X and r > 0, 
+the open ball centered at x with radius r is the set B(x, r) = {y ∈ X : d(x,y) < r}.
+
+Definition 1.3 (Continuous Function). Let (X, d_X) and (Y, d_Y) be metric spaces. 
+A function f: X → Y is continuous if for all x ∈ X and ε > 0, there exists δ > 0 
+such that for all y ∈ X, d_X(x,y) < δ implies d_Y(f(x), f(y)) < ε.
+
+Lemma 2.1. In any metric space (X, d), open balls are open sets.
+
+Proof. Let B(x, r) be an open ball. For any y ∈ B(x, r), let s = r - d(x,y) > 0. 
+We claim B(y, s) ⊆ B(x, r). Indeed, if z ∈ B(y, s), then d(y,z) < s, so by the 
+triangle inequality, d(x,z) ≤ d(x,y) + d(y,z) < d(x,y) + s = r. Thus z ∈ B(x, r).
+
+Theorem 2.2. Let (X, d_X) and (Y, d_Y) be metric spaces. A function f: X → Y is 
+continuous if and only if the preimage of every open set in Y is open in X.
+
+Proof. (⇒) Assume f is continuous. Let U ⊆ Y be open. We show f^(-1)(U) is open. 
+Let x ∈ f^(-1)(U). Then f(x) ∈ U. Since U is open, there exists ε > 0 such that 
+B(f(x), ε) ⊆ U. By continuity of f, there exists δ > 0 such that f(B(x, δ)) ⊆ B(f(x), ε) ⊆ U. 
+Thus B(x, δ) ⊆ f^(-1)(U), showing f^(-1)(U) is open.
+
+(⇐) Assume preimages of open sets are open. Fix x ∈ X and ε > 0. The set B(f(x), ε) 
+is open in Y by Lemma 2.1, so f^(-1)(B(f(x), ε)) is open in X. Since x ∈ f^(-1)(B(f(x), ε)), 
+there exists δ > 0 with B(x, δ) ⊆ f^(-1)(B(f(x), ε)). Thus for all y with d_X(x,y) < δ, 
+we have d_Y(f(x), f(y)) < ε, proving continuity.
+
+Corollary 2.3. The composition of continuous functions is continuous.
+
+Theorem 2.4 (Uniform Limit Theorem). Let (X, d_X) be a metric space and (Y, d_Y) be 
+a complete metric space. If {f_n: X → Y} is a sequence of continuous functions that 
+converges uniformly to f: X → Y, then f is continuous.

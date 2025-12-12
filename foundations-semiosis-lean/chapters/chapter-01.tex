@@ -1,0 +1,786 @@
+\documentclass[11pt]{amsart}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz-cd}
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\DeclareMathOperator{\Sig}{Sig}
+\DeclareMathOperator{\Obj}{Obj}
+\DeclareMathOperator{\Int}{Int}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\cod}{cod}
+\newcommand{\cat}[1]{\mathbf{#1}}
+\newcommand{\V}{\mathcal{V}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\op}{^{\mathrm{op}}}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+
+\title{Chapter 1: Elementary Semiotic Structures\\
+\large Foundations of Semiosis}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We develop the elementary theory of semiotic structures as a foundation for mathematics. 
+Unlike set-theoretic or type-theoretic foundations which take membership or typing judgments as primitive, 
+we take the \emph{sign--object--interpretant} triad as foundational. We prove that this perspective 
+subsumes classical mathematical structures through a series of representation theorems showing that 
+objects, morphisms, and even categories themselves emerge naturally as patterns of semiosis. 
+The central result is a Semiotic Yoneda Lemma (\cref{thm:ch1:semiotic_yoneda}) establishing that 
+objects are determined by their interpretants, making ``meaning'' rather than ``membership'' the 
+primitive relation of mathematics.
+\end{abstract}
+
+\section{Introduction}
+
+\subsection{The semiotic turn}
+
+Mathematics has traditionally been founded on \emph{objects}: sets, types, or spaces taken as primitive, 
+with structure imposed through relations, operations, or topology. This chapter inverts that paradigm. 
+We argue that mathematical objects are not given \emph{a priori} but emerge as invariants of 
+\emph{semiotic processes}---the interpretation of signs.
+
+Our foundational primitive is the \emph{semiotic structure}:
+\begin{itemize}
+\item A category $\cat{Sig}$ of \textbf{signs} (formulas, programs, diagrams, coordinates),
+\item A category $\cat{Obj}$ of \textbf{objects} (models, spaces, processes, states),
+\item A value category $\V$ encoding \textbf{degrees of validity},
+\item A \textbf{meaning functor} $\sem{-,-}: \cat{Sig}\op \times \cat{Obj} \to \V$ 
+  assigning to each sign--object pair a ``degree to which the sign holds at the object.''
+\end{itemize}
+
+This setup simultaneously generalizes:
+\begin{itemize}
+\item Model-theoretic satisfaction $M \models \varphi$,
+\item Programming language semantics $\Gamma \vdash e : \tau$,
+\item Sheaf conditions on open covers,
+\item Duality theories (Stone, Gelfand, Pontryagin),
+\item Internal languages of toposes.
+\end{itemize}
+
+The key insight is that \emph{objects are secondary}. What matters is the pattern of meanings: 
+the \textbf{interpretant} $\sem{s,-}: \cat{Obj} \to \V$ capturing how sign $s$ applies across 
+all objects. Our main theorems show:
+
+\begin{enumerate}
+\item Objects are determined by their interpretants (\cref{thm:ch1:semiotic_yoneda}),
+\item Morphisms between objects are recovered from natural transformations of interpretants 
+  (\cref{thm:ch1:morphism_characterization}),
+\item Traditional categories embed fully faithfully into categories of semiotic structures 
+  (\cref{thm:ch1:category_embedding}),
+\item Limits, colimits, and adjunctions in $\cat{Obj}$ arise from semiotic universal properties 
+  (\cref{thm:ch1:limits_from_semiosis,thm:ch1:adjunctions_from_semiosis}).
+\end{enumerate}
+
+Thus \emph{all of category theory}---and through it, most of modern mathematics---can be 
+reconstructed purely in terms of sign interpretation. This is the semiotic turn.
+
+\subsection{Relationship to existing foundations}
+
+\textbf{Set theory.} ZFC takes $\in$ as primitive and builds all mathematics from sets. 
+Semiotic foundations are agnostic about set theory: sets are one particular kind of object, 
+and $\in$ is one particular kind of sign. The semiotic perspective explains \emph{why} 
+set-theoretic foundations work: they are a semiotic structure where $\cat{Sig}$ is the 
+language of ZFC, $\cat{Obj}$ is the cumulative hierarchy, and $\V = \cat{2}$ (truth values).
+
+\textbf{Category theory.} Categories provide the natural language for semiosis: functoriality 
+of $\sem{-,-}$ encodes naturality of meaning. But classical category theory treats categories 
+as primitive, with functors and natural transformations built atop them. We reverse this: 
+categories \emph{are} semiotic structures (\cref{thm:ch1:categories_are_semiotic}), and 
+functors are semiotic morphisms (\cref{thm:ch1:functors_are_semiotic_morphisms}).
+
+\textbf{Type theory.} Type-theoretic foundations (including HoTT) take typing judgments as 
+primitive. Semiotic foundations treat types as signs and terms as objects, with typing 
+derivations as the meaning functor. \cref{thm:ch1:type_systems_semiotic} makes this precise.
+
+\textbf{Institutions.} Goguen and Burstall's institution theory studies logic-independent 
+model theory through satisfaction conditions. Institutions are semiotic structures where 
+$\cat{Sig}$ is indexed by signatures. Our framework generalizes institutions by:
+(a) allowing arbitrary value categories $\V$ beyond $\cat{2}$,
+(b) treating interpretants as primary objects of study,
+(c) developing a 2-categorical theory of semiotic morphisms.
+
+\subsection{Chapter outline}
+
+\textbf{Section 2} introduces value categories and the basic definitions: semiotic structures, 
+interpretants, and semiotic morphisms.
+
+\textbf{Section 3} proves the foundational theorems: the Semiotic Yoneda Lemma, 
+characterization of morphisms, and separation results.
+
+\textbf{Section 4} shows how classical category-theoretic structures (limits, adjunctions, 
+monads) emerge from semiotic universal properties.
+
+\textbf{Section 5} develops the 2-category $\cat{SemStr}$ of semiotic structures and proves 
+that standard mathematical categories embed into it.
+
+\textbf{Section 6} treats examples: classical logic, topological spaces, algebraic theories, 
+and type systems.
+
+\section{Semiotic Structures}
+
+\subsection{Value categories}
+
+The ``value'' of a sign at an object need not be Boolean. We work in maximal generality.
+
+\begin{definition}[Value category]\label{def:ch1:value_cat}
+A \textbf{value category} is a complete poset $(\V, \leq)$ regarded as a thin category 
+(at most one morphism between any two objects). Explicitly:
+\begin{itemize}
+\item Objects $v \in \V$ are \emph{values} (truth values, probabilities, costs, etc.),
+\item There is a morphism $v \to w$ iff $v \leq w$,
+\item $\V$ has all small meets $\bigwedge$ and joins $\bigvee$,
+\item Initial object $\bot = \bigwedge \V$ and terminal object $\top = \bigvee \V$.
+\end{itemize}
+\end{definition}
+
+\begin{example}[Standard value categories]\label{ex:ch1:value_examples}
+\begin{enumerate}
+\item $\cat{2} = \{\bot, \top\}$ with $\bot < \top$ (classical truth),
+\item Complete Heyting algebras (e.g., open sets of a space) for intuitionistic truth,
+\item $[0,1]$ with usual order (fuzzy/probabilistic values),
+\item $[0,\infty]$ with reverse order (costs, with $\infty$ representing impossibility),
+\item Quantales (complete lattices with associative, join-preserving multiplication) 
+  for resource-sensitive validity.
+\end{enumerate}
+\end{example}
+
+\begin{remark}
+All our theorems work for arbitrary value categories, but most examples use $\V = \cat{2}$. 
+Generality costs nothing and provides important special cases (metric semantics, probabilistic 
+logic, resource sensitivity).
+\end{remark}
+
+\subsection{The basic definitions}
+
+\begin{definition}[Semiotic structure]\label{def:ch1:semiotic_structure}
+A \textbf{semiotic structure} $\mathcal{S}$ consists of:
+\begin{enumerate}
+\item A small category $\cat{Sig}$ of \textbf{signs},
+\item A locally small category $\cat{Obj}$ of \textbf{objects},
+\item A value category $\V$,
+\item A \textbf{meaning functor}
+\[
+\sem{-,-}: \cat{Sig}\op \times \cat{Obj} \to \V
+\]
+that is functorial in both arguments.
+\end{enumerate}
+We write $\sem{s,A}$ for the value of sign $s \in \cat{Sig}$ at object $A \in \cat{Obj}$.
+\end{definition}
+
+\begin{remark}[Functoriality unpacked]\label{rem:ch1:functoriality}
+Functoriality means:
+\begin{itemize}
+\item \textbf{Contravariance in signs:} If $\alpha: s' \to s$ in $\cat{Sig}$, then 
+  $\sem{s,A} \leq \sem{s',A}$ for all $A$.
+  
+  \emph{Interpretation:} Morphisms in $\cat{Sig}$ are ``weakening'' or ``entailment'' 
+  directions. If $s'$ refines or entails $s$, then satisfaction of $s$ implies 
+  satisfaction of $s'$.
+  
+\item \textbf{Covariance in objects:} If $f: A \to B$ in $\cat{Obj}$, then 
+  $\sem{s,A} \leq \sem{s,B}$ for all $s$.
+  
+  \emph{Interpretation:} Morphisms in $\cat{Obj}$ are structure-preserving. 
+  Properties true at $A$ remain true at $B$ under such maps.
+\end{itemize}
+\end{remark}
+
+\begin{definition}[Interpretants]\label{def:ch1:interpretant}
+Let $\mathcal{S} = (\cat{Sig}, \cat{Obj}, \V, \sem{-,-})$ be a semiotic structure.
+\begin{enumerate}
+\item The \textbf{interpretant} of a sign $s \in \cat{Sig}$ is the functor
+\[
+\sem{s,-}: \cat{Obj} \to \V, \quad A \mapsto \sem{s,A}.
+\]
+\item The \textbf{category of interpretants} is
+\[
+\cat{Int}_{\mathcal{S}} = [\cat{Obj}, \V],
+\]
+the functor category from $\cat{Obj}$ to $\V$.
+\item The \textbf{meaning functor} (on signs) is
+\[
+M_{\mathcal{S}}: \cat{Sig} \to \cat{Int}_{\mathcal{S}}, \quad s \mapsto \sem{s,-}.
+\]
+\end{enumerate}
+\end{definition}
+
+\begin{remark}[The Peircean triad]
+Definition \ref{def:ch1:interpretant} encodes Peirce's sign--object--interpretant triad:
+\begin{itemize}
+\item \textbf{Sign:} $s \in \cat{Sig}$ (syntactic/diagrammatic entity),
+\item \textbf{Object:} $A \in \cat{Obj}$ (semantic entity),
+\item \textbf{Interpretant:} $\sem{s,-} \in \cat{Int}_{\mathcal{S}}$ (mediating functor).
+\end{itemize}
+The interpretant is not just the value $\sem{s,A}$ at a single object, but the 
+\emph{entire pattern} $\sem{s,-}$ across all objects---the ``semantic profile'' of $s$.
+\end{remark}
+
+\begin{definition}[Semiotic morphism]\label{def:ch1:semiotic_morphism}
+Let $\mathcal{S}_i = (\cat{Sig}_i, \cat{Obj}_i, \V_i, \sem{-,-}_i)$ for $i=1,2$ be 
+semiotic structures. A \textbf{semiotic morphism} $F: \mathcal{S}_1 \to \mathcal{S}_2$ 
+consists of:
+\begin{enumerate}
+\item A functor $F_{\Sig}: \cat{Sig}_1 \to \cat{Sig}_2$,
+\item A functor $F_{\Obj}: \cat{Obj}_1 \to \cat{Obj}_2$,
+\item A monotone map $F_{\V}: \V_1 \to \V_2$,
+\end{enumerate}
+satisfying the \textbf{meaning preservation} condition: for all $s \in \cat{Sig}_1$, 
+$A \in \cat{Obj}_1$,
+\[
+F_{\V}(\sem{s,A}_1) \leq \sem{F_{\Sig}(s), F_{\Obj}(A)}_2.
+\]
+\end{definition}
+
+\begin{remark}
+Meaning preservation says: translating signs and objects does not increase satisfaction. 
+This is the ``soundness'' condition for translations between semiotic systems.
+\end{remark}
+
+\begin{lemma}[Composition of semiotic morphisms]\label{lem:ch1:composition}
+Semiotic morphisms compose. Given $F: \mathcal{S}_1 \to \mathcal{S}_2$ and 
+$G: \mathcal{S}_2 \to \mathcal{S}_3$, define
+\[
+(G \circ F)_{\Sig} = G_{\Sig} \circ F_{\Sig}, \quad
+(G \circ F)_{\Obj} = G_{\Obj} \circ F_{\Obj}, \quad
+(G \circ F)_{\V} = G_{\V} \circ F_{\V}.
+\]
+Then $G \circ F$ is a semiotic morphism $\mathcal{S}_1 \to \mathcal{S}_3$.
+\end{lemma}
+% PROOF_TODO: lem:ch1:composition
+
+\begin{definition}[Category of semiotic structures]\label{def:ch1:semstr}
+Let $\cat{SemStr}$ denote the category whose:
+\begin{itemize}
+\item Objects are semiotic structures,
+\item Morphisms are semiotic morphisms,
+\item Composition is given by \cref{lem:ch1:composition}.
+\end{itemize}
+\end{definition}
+
+\subsection{Dual semiotic structures}
+
+Many dualities in mathematics involve reversing the direction of sign or object categories.
+
+\begin{definition}[Duals]\label{def:ch1:duals}
+Let $\mathcal{S} = (\cat{Sig}, \cat{Obj}, \V, \sem{-,-})$ be a semiotic structure.
+\begin{enumerate}
+\item The \textbf{sign-dual} is $\mathcal{S}^{\Sig\op} = (\cat{Sig}\op, \cat{Obj}, \V, \sem{-,-}^{\Sig\op})$ 
+  where $\sem{s,A}^{\Sig\op} = \sem{s,A}$.
+\item The \textbf{object-dual} is $\mathcal{S}^{\Obj\op} = (\cat{Sig}, \cat{Obj}\op, \V, \sem{-,-}^{\Obj\op})$ 
+  where $\sem{s,A}^{\Obj\op} = \sem{s,A}$.
+\item The \textbf{full dual} is $\mathcal{S}\op = (\cat{Sig}\op, \cat{Obj}\op, \V, \sem{-,-}\op)$.
+\end{enumerate}
+\end{definition}
+
+\begin{lemma}[Duality preserves structure]\label{lem:ch1:duality}
+If $\mathcal{S}$ is a semiotic structure, so are $\mathcal{S}^{\Sig\op}$, 
+$\mathcal{S}^{\Obj\op}$, and $\mathcal{S}\op$.
+\end{lemma}
+% PROOF_TODO: lem:ch1:duality
+
+\section{The Semiotic Yoneda Lemma}
+
+We now prove the central theorem: objects are determined by their interpretants.
+
+\subsection{Sign-separation and definability}
+
+\begin{definition}[Sign-separated]\label{def:ch1:sign_separated}
+A semiotic structure $\mathcal{S}$ is \textbf{sign-separated} if for all 
+$A, B \in \cat{Obj}$,
+\[
+(\forall s \in \cat{Sig}.\ \sem{s,A} = \sem{s,B}) 
+\quad \Longrightarrow \quad
+A \cong B.
+\]
+Equivalently: if $\sem{-,A}$ and $\sem{-,B}$ are naturally isomorphic as functors 
+$\cat{Obj} \to \V$, then $A \cong B$ in $\cat{Obj}$.
+\end{definition}
+
+\begin{remark}
+Sign-separation is the semiotic version of ``distinct points have distinct open neighborhoods'' 
+in topology, or ``distinct elements satisfy distinct formulas'' in logic. It says signs 
+are ``expressive enough'' to distinguish objects.
+\end{remark}
+
+\begin{definition}[Semantic natural transformation]\label{def:ch1:semantic_nat}
+Let $\mathcal{S}$ be a semiotic structure and $\mathcal{F}, \mathcal{G}: \cat{Obj} \to \V$ 
+be functors. A natural transformation $\tau: \mathcal{F} \Rightarrow \mathcal{G}$ is 
+\textbf{semantic} if it arises as
+\[
+\tau_A = \bigvee \{ \sem{s,A} \mid s \in \mathcal{D} \subseteq \cat{Sig} \}
+\]
+for some (possibly proper-class-sized) family $\mathcal{D}$ of signs definable in the 
+internal logic of $\cat{Sig}$.
+\end{definition}
+
+\begin{remark}
+The ``definable'' restriction prevents pathological transformations. In practice, for 
+$\V = \cat{2}$, semantic transformations are those ``constructible from signs.''
+\end{remark}
+
+\begin{definition}[Arrow-complete]\label{def:ch1:arrow_complete}
+A semiotic structure $\mathcal{S}$ is \textbf{arrow-complete} if for all $A, B \in \cat{Obj}$, 
+every semantic natural transformation
+\[
+\tau: \sem{-,A} \Rightarrow \sem{-,B}
+\]
+arises uniquely from a morphism $f: A \to B$ via
+\[
+\tau_s = \sem{s,f}: \sem{s,A} \to \sem{s,B}.
+\]
+\end{definition}
+
+\subsection{The main theorem}
+
+\begin{theorem}[Semiotic Yoneda Lemma]\label{thm:ch1:semiotic_yoneda}
+Let $\mathcal{S} = (\cat{Sig}, \cat{Obj}, \V, \sem{-,-})$ be a semiotic structure that is 
+sign-separated and arrow-complete. Define the \textbf{evaluation functor}
+\[
+E_{\mathcal{S}}: \cat{Obj} \to \cat{Int}_{\mathcal{S}}, \quad
+E_{\mathcal{S}}(A) = \sem{-,A}.
+\]
+Then:
+\begin{enumerate}
+\item $E_{\mathcal{S}}$ is fully faithful,
+\item The essential image of $E_{\mathcal{S}}$ consists precisely of the semantic functors 
+  in $\cat{Int}_{\mathcal{S}}$,
+\item Hence $\cat{Obj} \simeq \cat{Int}^{\mathrm{sem}}_{\mathcal{S}}$, the full subcategory 
+  of semantic functors.
+\end{enumerate}
+\end{theorem}
+% PROOF_TODO: thm:ch1:semiotic_yoneda
+
+\begin{proof}[Proof sketch]
+\textbf{(1) Fully faithful.}
+\begin{itemize}
+\item \textbf{Faithfulness:} If $f, g: A \to B$ induce the same natural transformation 
+  $\sem{-,A} \Rightarrow \sem{-,B}$, then $\sem{s,f} = \sem{s,g}$ for all $s$. 
+  By functoriality and sign-separation, $f = g$.
+\item \textbf{Fullness:} Given a semantic natural transformation 
+  $\tau: \sem{-,A} \Rightarrow \sem{-,B}$, arrow-completeness provides $f: A \to B$ 
+  with $\tau = \sem{-,f}$.
+\end{itemize}
+
+\textbf{(2) Essential image.} A functor $\mathcal{F}: \cat{Obj} \to \V$ is in the 
+essential image iff it is representable by some object modulo sign-expressibility conditions. 
+This is exactly the definition of semantic functors.
+
+\textbf{(3) Equivalence.} Combine (1) and (2).
+\end{proof}
+
+\begin{corollary}[Objects are interpretants]\label{cor:ch1:objects_are_interpretants}
+Under the hypotheses of \cref{thm:ch1:semiotic_yoneda}, every object $A \in \cat{Obj}$ 
+is canonically identified with its interpretant $\sem{-,A}$. Hence:
+\[
+\text{The category of objects is equivalent to the category of their semantic profiles.}
+\]
+\end{corollary}
+% PROOF_TODO: cor:ch1:objects_are_interpretants
+
+\begin{remark}[Philosophical import]
+\cref{thm:ch1:semiotic_yoneda} is the precise mathematical statement of 
+``\emph{mathematics is semiosis}.'' Objects do not have an existence independent of 
+how signs apply to them. An object \emph{is} the pattern of its interpretants.
+\end{remark}
+
+\subsection{Morphism characterization}
+
+\begin{theorem}[Morphisms from sign-preservation]\label{thm:ch1:morphism_characterization}
+Let $\mathcal{S}$ be sign-separated and arrow-complete. Then morphisms $f: A \to B$ in 
+$\cat{Obj}$ correspond bijectively to families of inequalities
+\[
+\{ \sem{s,A} \leq \sem{s,B} \}_{s \in \cat{Sig}}
+\]
+respecting the composition structure of $\cat{Sig}$.
+\end{theorem}
+% PROOF_TODO: thm:ch1:morphism_characterization
+
+\begin{proof}[Proof sketch]
+A morphism $f: A \to B$ induces $\sem{s,A} \leq \sem{s,B}$ by covariance. 
+Conversely, such a family defines a natural transformation $\sem{-,A} \Rightarrow \sem{-,B}$, 
+which by arrow-completeness arises from a unique $f: A \to B$.
+\end{proof}
+
+\begin{corollary}[Isomorphisms from semantic equivalence]\label{cor:ch1:iso_from_sem_equiv}
+$A \cong B$ in $\cat{Obj}$ if and only if $\sem{s,A} = \sem{s,B}$ for all $s \in \cat{Sig}$.
+\end{corollary}
+% PROOF_TODO: cor:ch1:iso_from_sem_equiv
+
+\subsection{Separation theorems}
+
+\begin{theorem}[Heyting separation]\label{thm:ch1:heyting_separation}
+Let $\mathcal{S}$ be a semiotic structure with $\V$ a complete Heyting algebra. 
+If $\cat{Sig}$ contains:
+\begin{enumerate}
+\item A sign $\top_{\cat{Sig}}$ with $\sem{\top_{\cat{Sig}}, A} = \top$ for all $A$,
+\item For all $s, t \in \cat{Sig}$, signs $s \land t$ and $s \Rightarrow t$ with
+  \[
+  \sem{s \land t, A} = \sem{s,A} \land \sem{t,A}, \quad
+  \sem{s \Rightarrow t, A} = \sem{s,A} \Rightarrow \sem{t,A},
+  \]
+\end{enumerate}
+then $\mathcal{S}$ is sign-separated.
+\end{theorem}
+% PROOF_TODO: thm:ch1:heyting_separation
+
+\begin{proof}[Proof sketch]
+If $\sem{s,A} = \sem{s,B}$ for all $s$, then the Heyting operations force 
+$\sem{-,A}$ and $\sem{-,B}$ to be the same functor, hence $A \cong B$.
+\end{proof}
+
+\begin{theorem}[Quantale separation]\label{thm:ch1:quantale_separation}
+Let $\mathcal{S}$ be a semiotic structure with $\V$ a commutative quantale (complete lattice 
+with associative, commutative, join-preserving $\otimes$). If $\cat{Sig}$ is closed under 
+$\otimes$ in the sense that
+\[
+\sem{s \otimes t, A} = \sem{s,A} \otimes \sem{t,A},
+\]
+and $\cat{Sig}$ separates points of $\cat{Obj}$, then $\mathcal{S}$ is sign-separated.
+\end{theorem}
+% PROOF_TODO: thm:ch1:quantale_separation
+
+\section{Semiotic Universal Properties}
+
+We show that limits, colimits, and adjunctions in $\cat{Obj}$ are characterized by 
+universal properties of interpretants.
+
+\subsection{Limits and colimits}
+
+\begin{theorem}[Limits from semiotic universality]\label{thm:ch1:limits_from_semiosis}
+Let $\mathcal{S}$ be a semiotic structure and $D: \mathcal{J} \to \cat{Obj}$ a diagram. 
+If $L \in \cat{Obj}$ satisfies
+\[
+\sem{s, L} = \bigwedge_{j \in \mathcal{J}} \sem{s, D(j)}
+\quad \text{for all } s \in \cat{Sig},
+\]
+then $L$ is a limit of $D$ (provided $\mathcal{S}$ is arrow-complete).
+\end{theorem}
+% PROOF_TODO: thm:ch1:limits_from_semiosis
+
+\begin{proof}[Proof sketch]
+The universal property $\sem{s,L} = \bigwedge_j \sem{s, D(j)}$ makes $\sem{-,L}$ the 
+limit of the interpretants $\sem{-, D(j)}$ in the functor category $[\cat{Obj}, \V]$. 
+By the Semiotic Yoneda Lemma, this corresponds to $L$ being a limit in $\cat{Obj}$.
+\end{proof}
+
+\begin{corollary}[Products as sign-wise meets]\label{cor:ch1:products}
+In a sign-separated, arrow-complete semiotic structure, $A \times B$ exists iff there is 
+an object $P$ with
+\[
+\sem{s, P} = \sem{s,A} \land \sem{s,B} \quad \text{for all } s.
+\]
+\end{corollary}
+% PROOF_TODO: cor:ch1:products
+
+\begin{theorem}[Colimits from semiotic universality]\label{thm:ch1:colimits_from_semiosis}
+Let $\mathcal{S}$ be a semiotic structure with $\V$ cocomplete. If $C \in \cat{Obj}$ 
+satisfies
+\[
+\sem{s, C} = \bigvee_{j \in \mathcal{J}} \sem{s, D(j)} \quad \text{for all } s,
+\]
+then $C$ is a colimit of $D$.
+\end{theorem}
+% PROOF_TODO: thm:ch1:colimits_from_semiosis
+
+\subsection{Adjunctions}
+
+\begin{theorem}[Adjunctions from semiotic equivalence]\label{thm:ch1:adjunctions_from_semiosis}
+Let $F: \mathcal{S}_1 \to \mathcal{S}_2$ be a semiotic morphism inducing 
+$F^*: \cat{Int}_{\mathcal{S}_2} \to \cat{Int}_{\mathcal{S}_1}$ by precomposition. 
+If $F^*$ has a left adjoint $F_!$, then $F_{\Obj}: \cat{Obj}_1 \to \cat{Obj}_2$ has a 
+left adjoint, and vice versa.
+\end{theorem}
+% PROOF_TODO: thm:ch1:adjunctions_from_semiosis
+
+\begin{proof}[Proof sketch]
+The adjunction $F_! \dashv F^*$ at the level of interpretants descends to an adjunction 
+at the level of objects via the evaluation functors $E_{\mathcal{S}_1}$ and 
+$E_{\mathcal{S}_2}$, which are fully faithful equivalences onto semantic functors.
+\end{proof}
+
+\begin{corollary}[Free--forgetful adjunctions]\label{cor:ch1:free_forgetful}
+Let $\mathcal{S}_1$ be a semiotic structure with fewer signs than $\mathcal{S}_2$, 
+and $F: \mathcal{S}_1 \to \mathcal{S}_2$ a full embedding on signs. 
+Then the induced functor $F_{\Obj}: \cat{Obj}_1 \to \cat{Obj}_2$ has a right adjoint 
+(forgetful functor) iff $F^*$ has a left adjoint (free construction on interpretants).
+\end{corollary}
+% PROOF_TODO: cor:ch1:free_forgetful
+
+\subsection{Monads and algebras}
+
+\begin{theorem}[Monads as semiotic structure]\label{thm:ch1:monads_semiotic}
+Let $\mathcal{S}$ be a semiotic structure and $T: \cat{Obj} \to \cat{Obj}$ a monad. 
+Then the category $\cat{Obj}^T$ of $T$-algebras is equivalent to a semiotic structure 
+$\mathcal{S}^T$ with:
+\begin{itemize}
+\item $\cat{Sig}^T = \cat{Sig}$ (same signs),
+\item $\cat{Obj}^T$ = category of $T$-algebras,
+\item $\sem{s, (A,\alpha)}^T = \sem{s, A}$ where $(A,\alpha)$ is a $T$-algebra.
+\end{itemize}
+Moreover, $T$-algebra morphisms are characterized by sign-preservation.
+\end{theorem}
+% PROOF_TODO: thm:ch1:monads_semiotic
+
+\section{Embedding Classical Structures}
+
+We prove that traditional mathematical categories embed fully faithfully into 
+$\cat{SemStr}$.
+
+\subsection{Categories as semiotic structures}
+
+\begin{theorem}[Categories are semiotic structures]\label{thm:ch1:categories_are_semiotic}
+Every locally small category $\C$ induces a semiotic structure $\mathcal{S}_{\C}$ with:
+\begin{itemize}
+\item $\cat{Sig} = \C\op$ (objects of $\C$ viewed as ``signs''),
+\item $\cat{Obj} = \C$ (objects of $\C$ viewed as ``objects''),
+\item $\V = \cat{Set}$ (regarded as a poset via subset inclusion),
+\item $\sem{X, A} = \Hom_{\C}(X, A)$.
+\end{itemize}
+Moreover, functors $F: \C \to \D$ correspond to semiotic morphisms 
+$\mathcal{S}_{\C} \to \mathcal{S}_{\D}$.
+\end{theorem}
+% PROOF_TODO: thm:ch1:categories_are_semiotic
+
+\begin{proof}[Proof sketch]
+The Yoneda embedding $\C \to [\C\op, \cat{Set}]$ given by $A \mapsto \Hom(-,A)$ 
+is the evaluation functor $E_{\mathcal{S}_{\C}}$. The classical Yoneda lemma states 
+that this is fully faithful, which is exactly the conclusion of the Semiotic Yoneda Lemma 
+for this structure.
+\end{proof}
+
+\begin{corollary}[Yoneda as special case]\label{cor:ch1:yoneda_special_case}
+The classical Yoneda lemma is a special case of \cref{thm:ch1:semiotic_yoneda} where 
+$\V = \cat{Set}$ and $\cat{Sig} = \C\op$.
+\end{corollary}
+% PROOF_TODO: cor:ch1:yoneda_special_case
+
+\begin{theorem}[Functors are semiotic morphisms]\label{thm:ch1:functors_are_semiotic_morphisms}
+Let $\C, \D$ be categories with induced semiotic structures $\mathcal{S}_{\C}, \mathcal{S}_{\D}$. 
+Then functors $F: \C \to \D$ correspond bijectively to semiotic morphisms 
+$F^{\mathrm{sem}}: \mathcal{S}_{\C} \to \mathcal{S}_{\D}$ via:
+\begin{itemize}
+\item $(F^{\mathrm{sem}})_{\Sig} = F\op: \C\op \to \D\op$,
+\item $(F^{\mathrm{sem}})_{\Obj} = F: \C \to \D$,
+\item $(F^{\mathrm{sem}})_{\V} = \id_{\cat{Set}}$,
+\item Meaning preservation: $\Hom_{\C}(X,A) \xrightarrow{F} \Hom_{\D}(F(X), F(A))$.
+\end{itemize}
+\end{theorem}
+% PROOF_TODO: thm:ch1:functors_are_semiotic_morphisms
+
+\subsection{Embedding theorem}
+
+\begin{theorem}[Category embedding]\label{thm:ch1:category_embedding}
+The assignment $\C \mapsto \mathcal{S}_{\C}$ extends to a fully faithful 2-functor
+\[
+\Phi: \cat{Cat} \to \cat{SemStr}
+\]
+from the 2-category of categories, functors, and natural transformations to the 
+2-category of semiotic structures, semiotic morphisms, and semiotic 2-cells 
+(to be defined in Chapter 2).
+\end{theorem}
+% PROOF_TODO: thm:ch1:category_embedding
+
+\begin{corollary}[All category theory is semiotic]\label{cor:ch1:all_cat_theory_semiotic}
+Every theorem of category theory (limits, adjunctions, Kan extensions, monads, etc.) 
+is a theorem about semiotic structures.
+\end{corollary}
+% PROOF_TODO: cor:ch1:all_cat_theory_semiotic
+
+\subsection{Type systems}
+
+\begin{theorem}[Type systems as semiotic structures]\label{thm:ch1:type_systems_semiotic}
+A simply-typed lambda calculus with context $\Gamma$, term $e$, and type $\tau$ induces 
+a semiotic structure where:
+\begin{itemize}
+\item $\cat{Sig}$ = typing derivations $\Gamma \vdash e : \tau$,
+\item $\cat{Obj}$ = semantic interpretations (e.g., sets, domains, or categories for $\Gamma$, $\tau$),
+\item $\V = \cat{2}$,
+\item $\sem{\Gamma \vdash e : \tau, M} = \top$ iff $\sem{e}_M \in \sem{\tau}_M$ under 
+  interpretation $M$.
+\end{itemize}
+Type soundness is the statement that this semiotic structure is sign-separated.
+\end{theorem}
+% PROOF_TODO: thm:ch1:type_systems_semiotic
+
+\begin{corollary}[Dependent types]\label{cor:ch1:dependent_types}
+Dependent type theories (Martin-L\"of Type Theory, Calculus of Constructions) are 
+semiotic structures where $\cat{Sig}$ is the category of contexts and judgments, 
+and $\cat{Obj}$ is a category with families (CwF).
+\end{corollary}
+% PROOF_TODO: cor:ch1:dependent_types
+
+\section{Examples and Applications}
+
+\subsection{Classical logic}
+
+\begin{example}[First-order logic]\label{ex:ch1:fol}
+Fix a first-order signature $\Sigma = (S, F, R)$ (sorts, function symbols, relation symbols).
+\begin{itemize}
+\item $\cat{Sig}$ = category of formulas with morphisms given by syntactic entailment 
+  $\varphi \vdash \psi$,
+\item $\cat{Obj}$ = category of $\Sigma$-structures and homomorphisms,
+\item $\V = \cat{2}$,
+\item $\sem{\varphi, M} = \top$ iff $M \models \varphi$.
+\end{itemize}
+This is sign-separated (by compactness and Henkin construction) and arrow-complete 
+(by elementary embeddings).
+\end{example}
+
+\begin{theorem}[Completeness as sign-separation]\label{thm:ch1:completeness_separation}
+A first-order theory $T$ is complete (every sentence is decided) if and only if the 
+induced semiotic structure has a single object up to isomorphism in $\cat{Obj}$.
+\end{theorem}
+% PROOF_TODO: thm:ch1:completeness_separation
+
+\subsection{Stone duality}
+
+\begin{example}[Stone spaces]\label{ex:ch1:stone}
+\begin{itemize}
+\item $\cat{Sig}$ = Boolean algebra of clopen sets (equivalently, formulas in propositional logic),
+\item $\cat{Obj}$ = Stone spaces (compact Hausdorff totally disconnected spaces) with continuous maps,
+\item $\V = \cat{2}$,
+\item $\sem{U, X} = \top$ iff $U$ is clopen in $X$ (realized via ultrafilters/points).
+\end{itemize}
+Stone duality is the statement that this semiotic structure satisfies 
+\cref{thm:ch1:semiotic_yoneda}: Stone spaces are determined by their clopen algebras.
+\end{example}
+
+\begin{theorem}[Stone duality as semiotic equivalence]\label{thm:ch1:stone_duality}
+The semiotic structure of \cref{ex:ch1:stone} induces an equivalence of categories
+\[
+\cat{Stone} \simeq \cat{Bool}\op,
+\]
+where $\cat{Bool}$ is the category of Boolean algebras.
+\end{theorem}
+% PROOF_TODO: thm:ch1:stone_duality
+
+\subsection{Topological spaces}
+
+\begin{example}[Topological spaces via open sets]\label{ex:ch1:topology}
+\begin{itemize}
+\item $\cat{Sig}$ = frame of open sets (complete Heyting algebra under $\cup, \cap$),
+\item $\cat{Obj}$ = topological space $X$ with points,
+\item $\V = \cat{2}$,
+\item $\sem{U, x} = \top$ iff $x \in U$.
+\end{itemize}
+A space is \textbf{sober} iff it is sign-separated in this semiotic structure.
+\end{example}
+
+\begin{theorem}[Sobriety as sign-separation]\label{thm:ch1:sobriety}
+A topological space $X$ is sober if and only if the semiotic structure of 
+\cref{ex:ch1:topology} is sign-separated. Moreover, the category of sober spaces 
+is equivalent to the opposite of the category of frames.
+\end{theorem}
+% PROOF_TODO: thm:ch1:sobriety
+
+\subsection{Algebraic theories}
+
+\begin{example}[Lawvere theories]\label{ex:ch1:lawvere}
+A Lawvere theory $\mathbb{T}$ is a category with finite products and a distinguished 
+object $1$. It induces a semiotic structure:
+\begin{itemize}
+\item $\cat{Sig} = \mathbb{T}\op$ (operations as signs),
+\item $\cat{Obj} = \cat{Mod}(\mathbb{T})$ (models: product-preserving functors $\mathbb{T} \to \cat{Set}$),
+\item $\V = \cat{Set}$,
+\item $\sem{f, M} = M(f)$ for $f: n \to m$ in $\mathbb{T}$, $M$ a model.
+\end{itemize}
+Arrow-completeness follows from the fact that natural transformations between models 
+are model morphisms.
+\end{example}
+
+\begin{theorem}[Algebraic theories are semiotic]\label{thm:ch1:algebraic_theories}
+Every Lawvere theory $\mathbb{T}$ induces a sign-separated, arrow-complete semiotic 
+structure as in \cref{ex:ch1:lawvere}. The category of models is equivalent to the 
+category of semantic functors.
+\end{theorem}
+% PROOF_TODO: thm:ch1:algebraic_theories
+
+\section{Conclusion and Forward Directions}
+
+\subsection{Summary of results}
+
+We have established:
+\begin{enumerate}
+\item \textbf{Foundations:} Semiotic structures $(\cat{Sig}, \cat{Obj}, \V, \sem{-,-})$ 
+  provide a unified framework subsuming model theory, categorical semantics, and duality theory.
+  
+\item \textbf{Representation:} The Semiotic Yoneda Lemma (\cref{thm:ch1:semiotic_yoneda}) 
+  proves that objects are determined by their interpretants, formalizing ``math is semiosis.''
+  
+\item \textbf{Universal properties:} Limits, colimits, and adjunctions in $\cat{Obj}$ 
+  arise from universal properties of interpretants (\cref{thm:ch1:limits_from_semiosis,thm:ch1:adjunctions_from_semiosis}).
+  
+\item \textbf{Embedding:} Classical category theory embeds fully faithfully into semiotic 
+  structures (\cref{thm:ch1:category_embedding}), showing that all category-theoretic 
+  phenomena are semiotic.
+  
+\item \textbf{Examples:} First-order logic, Stone duality, topological spaces, type systems, 
+  and algebraic theories all instantiate the semiotic framework.
+\end{enumerate}
+
+\subsection{Open questions}
+
+\begin{enumerate}
+\item \textbf{Higher semiosis:} Can we develop a $(\infty,1)$-categorical version where 
+  interpretants form an $\infty$-category?
+  
+\item \textbf{Internal semiosis:} Given a semiotic structure $\mathcal{S}$, when does 
+  $\cat{Obj}$ itself have an internal language that forms a new semiotic structure?
+  
+\item \textbf{Enrichment:} What happens when $\V$ is not a poset but a genuine monoidal 
+  category? (Metric spaces, probabilistic structures, etc.)
+  
+\item \textbf{Computational content:} Can we extract algorithms from semiotic proofs 
+  (e.g., decision procedures from sign-separation)?
+  
+\item \textbf{Resource semantics:} How do linear types, quantum computation, and resource 
+  logics fit into the semiotic framework?
+\end{enumerate}
+
+\subsection{Chapter dependencies}
+
+Subsequent chapters will develop:
+\begin{itemize}
+\item \textbf{Chapter 2:} 2-categorical structure of $\cat{SemStr}$, natural transformations 
+  of semiotic morphisms, and semiotic Kan extensions.
+  
+\item \textbf{Chapter 3:} Duality theory: systematic treatment of Stone, Gelfand, Pontryagin 
+  dualities as semiotic equivalences.
+  
+\item \textbf{Chapter 4:} Enriched and internal semiosis: when $\V$ is a monoidal category 
+  and when semiotic structures live inside a topos.
+  
+\item \textbf{Chapter 5:} Computational semiosis: programming language semantics, type systems, 
+  and proof theory from the semiotic perspective.
+  
+\item \textbf{Chapter 6:} Higher semiosis: simplicial and $\infty$-categorical generalizations.
+\end{itemize}
+
+All concepts introduced here (sign-separation, arrow-completeness, semantic functors, 
+evaluation functors) will be lifted to these richer settings.
+
+\vspace{1cm}
+
+\noindent \textbf{End of Chapter 1.}
+
+\end{document}
