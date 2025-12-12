@@ -7,7 +7,7 @@ Download a random arXiv paper, extract **all** theorems/definitions/axioms to Le
 ## Core Objectives
 
 1. **Download & Parse**: Random arXiv paper → extract mathematical content
-2. **Translate**: Every theorem/definition/axiom → validated Lean code
+2. **Translate**: Every theorem/definition/axiom → validated Lean code **using the existing pipeline with Z3 validation, not using copilot/LLM features**
 3. **Learn**: Update translation system based on failures
 4. **Validate**: Z3 verification at every step + Lean type checking
 5. **No Regressions**: All previous papers must still parse correctly
@@ -72,7 +72,7 @@ def download_random_paper(category='math.CO', max_results=100):
     return paper
 ```
 
-### 1.2 Extract LaTeX Theorems
+### 1.2 Extract LaTeX Theorems using Copilot
 
 **Key Insight**: Theorems are stated with **enormous variation** in real papers:
 
@@ -104,157 +104,7 @@ Let a list $xs$ be *sorted* if $xs[i] \leq xs[i+1]$ for all $0 \leq i < |xs|-1$.
 ```
 
 **Z3-Validated Extractor**:
-
-```python
-from z3_validated_ir import DocumentContext, TheoremDependency
-import re
-from typing import List, Dict, Tuple
-
-class TheoremExtractor:
-    """Extract theorems from LaTeX with Z3 validation."""
-    
-    # Patterns for theorem-like environments
-    THEOREM_PATTERNS = [
-        r'\\begin{theorem}(.*?)\\end{theorem}',
-        r'\\begin{thm}(.*?)\\end{thm}',
-        r'\\begin{lemma}(.*?)\\end{lemma}',
-        r'\\begin{proposition}(.*?)\\end{proposition}',
-        r'\\begin{corollary}(.*?)\\end{corollary}',
-        r'\\begin{conjecture}(.*?)\\end{conjecture}',
-        r'\*\*Theorem\s+[\d.]+\*\*\s*(.*?)(?=\n\n|\*\*)',
-        r'Theorem\s+[\d.]+\.\s*(.*?)(?=\n\n|Proof|\\begin)',
-    ]
-    
-    DEFINITION_PATTERNS = [
-        r'\\begin{definition}(.*?)\\end{definition}',
-        r'\\begin{defn}(.*?)\\end{defn}',
-        r'\*\*Definition\s+[\d.]+\*\*\s*(.*?)(?=\n\n|\*\*)',
-        r'Let\s+(.*?)\s+be\s+\*?(.*?)\*?\s+if\s+(.*?)(?=\.|\n)',
-    ]
-    
-    AXIOM_PATTERNS = [
-        r'\\begin{axiom}(.*?)\\end{axiom}',
-        r'\*\*Axiom\*\*\s*(.*?)(?=\n\n|\*\*)',
-        r'Axiom\s+[\d.]+\.\s*(.*?)(?=\n\n)',
-    ]
-    
-    def __init__(self):
-        self.doc_context = DocumentContext()
-        self.vocabulary_gaps = []  # Track undefined terms
-    
-    def extract_all(self, latex_content: str) -> List[Dict]:
-        """
-        Extract all mathematical statements with Z3 validation.
-        
-        Returns list of:
-        {
-            'type': 'theorem' | 'definition' | 'axiom',
-            'name': str,
-            'statement': str (raw LaTeX),
-            'parsed_ir': ValidatedIRExpr,
-            'dependencies': List[str],
-            'z3_validated': bool,
-            'missing_vocabulary': List[str]
-        }
-        """
-        statements = []
-        
-        # Extract theorems
-        for pattern in self.THEOREM_PATTERNS:
-            for match in re.finditer(pattern, latex_content, re.DOTALL | re.IGNORECASE):
-                stmt = self._parse_statement(match.group(1), 'theorem')
-                if stmt:
-                    statements.append(stmt)
-        
-        # Extract definitions (CRITICAL: these define new vocabulary)
-        for pattern in self.DEFINITION_PATTERNS:
-            for match in re.finditer(pattern, latex_content, re.DOTALL | re.IGNORECASE):
-                defn = self._parse_definition(match.group(0))
-                if defn:
-                    statements.append(defn)
-                    # Add to vocabulary immediately
-                    self._add_to_vocabulary(defn)
-        
-        # Extract axioms
-        for pattern in self.AXIOM_PATTERNS:
-            for match in re.finditer(pattern, latex_content, re.DOTALL | re.IGNORECASE):
-                axiom = self._parse_statement(match.group(1), 'axiom')
-                if axiom:
-                    statements.append(axiom)
-        
-        return statements
-    
-    def _parse_definition(self, latex: str) -> Dict:
-        """
-        Parse definition and extract new term.
-        
-        Example:
-        "Let a list xs be *sorted* if xs[i] ≤ xs[i+1] for all 0 ≤ i < |xs|-1"
-        
-        Extracts:
-        - term: "sorted"
-        - signature: List α → Prop
-        - definition: ∀ i, 0 ≤ i < xs.length - 1 → xs[i] ≤ xs[i+1]
-        """
-        # Pattern: "Let X be Y if Z"
-        match = re.match(r'Let\s+(.*?)\s+be\s+\*?(.*?)\*?\s+if\s+(.*)', 
-                        latex, re.IGNORECASE | re.DOTALL)
-        
-        if not match:
-            return None
-        
-        subject = match.group(1).strip()  # "a list xs"
-        term = match.group(2).strip()      # "sorted"
-        condition = match.group(3).strip() # "xs[i] ≤ xs[i+1]..."
-        
-        # Use Z3 to validate the condition
-        from semantic_to_ir import latex_to_validated_ir
-        
-        try:
-            ir_expr = latex_to_validated_ir(condition, self.doc_context)
-            
-            return {
-                'type': 'definition',
-                'name': term,
-                'subject': subject,
-                'statement': latex,
-                'parsed_ir': ir_expr,
-                'z3_validated': ir_expr.validate_in_context(self.doc_context).is_valid,
-                'lean_signature': self._infer_lean_signature(subject, condition),
-                'missing_vocabulary': []
-            }
-        except Exception as e:
-            print(f"⚠️  Failed to parse definition '{term}': {e}")
-            return None
-    
-    def _infer_lean_signature(self, subject: str, condition: str) -> str:
-        """
-        Infer Lean signature from definition context.
-        
-        "a list xs" → List α → Prop
-        "a graph G" → Graph V E → Prop
-        "a natural number n" → ℕ → Prop
-        """
-        subject_lower = subject.lower()
-        
-        if 'list' in subject_lower or 'array' in subject_lower:
-            return 'List α → Prop'
-        elif 'graph' in subject_lower:
-            return 'Graph V E → Prop'
-        elif 'set' in subject_lower:
-            return 'Set α → Prop'
-        elif 'number' in subject_lower:
-            if 'natural' in subject_lower:
-                return 'ℕ → Prop'
-            elif 'real' in subject_lower:
-                return 'ℝ → Prop'
-            return 'α → Prop'
-        elif 'function' in subject_lower:
-            return '(α → β) → Prop'
-        else:
-            # Default: treat as predicate on some type
-            return 'α → Prop'
-```
+Whatever the current z3-based theorem extractor is, we will use it here to extract all statements into structured format.
 
 ## Phase 2: Vocabulary Management with Z3
 

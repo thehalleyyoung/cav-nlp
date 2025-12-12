@@ -1,0 +1,497 @@
+{
+  "chapter": "chapter-01",
+  "title": "Polarized Protocols: The Primitive Structure",
+  "theorems": [
+    {
+      "id": "thm:ch1:prot_category",
+      "type": "theorem",
+      "name": "Protocols Form a Category",
+      "statement_latex": "There exists a category $\\Prot$ where:\n\\begin{itemize}\n\\item \\textbf{Objects} are protocols $P = (A_P, \\Sigma_P)$\n\\item \\textbf{Morphisms} $\\sigma: P \\to Q$ are protocol refinements (defined below)\n\\item \\textbf{Identities} $\\id_P$ are copycat strategies\n\\item \\textbf{Composition} is given by parallel composition plus hiding\n\\end{itemize}\nsatisfying all category axioms.",
+      "line_number": 111,
+      "proof_status": "TODO",
+      "dependencies": []
+    },
+    {
+      "id": "thm:ch1:involutive_duality",
+      "type": "theorem",
+      "name": "Involutive Duality",
+      "statement_latex": "For any arena $A$:\n\\begin{enumerate}[(a)]\n\\item $(A^{\\perp})^{\\perp} = A$ (duality is involutive)\n\\item $|A^{\\perp}| = |A|$ (same cardinality)\n\\item $\\dim(A^{\\perp}) = \\dim(A)$ where $\\dim$ is protocol dimension (defined later)\n\\end{enumerate}",
+      "line_number": 136,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:arena_dual"
+      ]
+    },
+    {
+      "id": "thm:ch1:strategy_env_dual",
+      "type": "theorem",
+      "name": "Strategy-Environment Duality",
+      "statement_latex": "There is a natural bijection:\n\\[\n\\{\\text{Strategies on } A\\} \\leftrightarrow \\{\\text{Co-strategies on } A^{\\perp}\\}\n\\]\ngiven by $\\sigma \\mapsto \\sigma^{\\perp}$, where co-strategies respond to positive positions (environment role) rather than negative positions (strategy role).\n\nMoreover, composition satisfies:\n\\[\n(\\sigma \\otimes \\tau)^{\\perp} = \\sigma^{\\perp} \\Par \\tau^{\\perp}\n\\]\nwhere $\\otimes$ is tensor (simultaneous provision) and $\\Par$ is its dual (simultaneous demand).",
+      "line_number": 161,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:strategy_dual"
+      ]
+    },
+    {
+      "id": "cor:ch1:interaction_symmetry",
+      "type": "corollary",
+      "name": "Interaction Symmetry at Meta-Level",
+      "statement_latex": "Although individual protocols are polarized (asymmetric), the theory of protocols is symmetric: every protocol has a dual representing its environment. Composition of protocol with its dual environment yields interaction.",
+      "line_number": 177,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:strategy_env_dual"
+      ]
+    },
+    {
+      "id": "thm:ch1:tensor_properties",
+      "type": "theorem",
+      "name": "Tensor Properties",
+      "statement_latex": "The tensor product $\\otimes$ on $\\Prot$ satisfies:\n\\begin{enumerate}[(a)]\n\\item \\textbf{(Bifunctoriality)} For refinements $\\sigma: P \\to P'$ and $\\tau: Q \\to Q'$, there exists $\\sigma \\otimes \\tau: P \\otimes Q \\to P' \\otimes Q'$\n\\item \\textbf{(Associativity)} $(P \\otimes Q) \\otimes R \\cong P \\otimes (Q \\otimes R)$ (natural isomorphism)\n\\item \\textbf{(Commutativity)} $P \\otimes Q \\cong Q \\otimes P$ (braiding)\n\\item \\textbf{(Unit)} $\\mathbf{1} \\otimes P \\cong P \\cong P \\otimes \\mathbf{1}$\n\\end{enumerate}",
+      "line_number": 203,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:tensor"
+      ]
+    },
+    {
+      "id": "thm:ch1:tensor_linear_adj",
+      "type": "theorem",
+      "name": "Adjunction: Tensor and Linear Implication",
+      "statement_latex": "For any protocols $P, Q, R$, there is a natural bijection:\n\\[\n\\Prot(P \\otimes Q, R) \\cong \\Prot(P, Q \\multimap R)\n\\]\nThis makes $\\otimes$ left adjoint to $\\multimap$.",
+      "line_number": 232,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:linear_impl"
+      ]
+    },
+    {
+      "id": "thm:ch1:star_autonomous",
+      "type": "theorem",
+      "name": "$*$-Autonomous Structure",
+      "statement_latex": "The category $\\Prot$ is $*$-autonomous:\n\\begin{enumerate}[(a)]\n\\item $(\\Prot, \\otimes, \\mathbf{1})$ is symmetric monoidal\n\\item Every object $P$ has a dual $P^{\\perp}$\n\\item There exists a dualizing object $\\bot = \\mathbf{1}^{\\perp}$ such that $P^{\\perp} \\cong [P, \\bot]$ where $[P, Q] = P \\multimap Q$\n\\item The double dual embedding $P \\to P^{\\perp\\perp}$ is a natural isomorphism\n\\end{enumerate}",
+      "line_number": 242,
+      "proof_status": "TODO",
+      "dependencies": [
+        "thm:ch1:tensor_properties",
+        "thm:ch1:tensor_linear_adj"
+      ]
+    },
+    {
+      "id": "cor:ch1:mll_model",
+      "type": "corollary",
+      "name": "Protocol Theory Generalizes Linear Logic",
+      "statement_latex": "$\\Prot$ is a \\emph{model} of multiplicative linear logic (MLL). Every MLL proof corresponds to a protocol morphism, and cut-elimination corresponds to protocol composition simplification.",
+      "line_number": 254,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:star_autonomous"
+      ]
+    },
+    {
+      "id": "thm:ch1:polarization_decomp",
+      "type": "theorem",
+      "name": "Polarization Decomposition Theorem",
+      "statement_latex": "Every protocol arena $A$ admits a canonical decomposition:\n\\[\nA \\cong A^+ \\otimes A^- \\otimes A^0\n\\]\nwhere:\n\\begin{enumerate}[(a)]\n\\item $A^+ = \\{m \\in |A| : \\beta^-(m) > 0\\}$ (positive-dominant positions)\n\\item $A^- = \\{m \\in |A| : \\beta^+(m) < 0\\}$ (negative-dominant positions)\n\\item $A^0 = \\{m \\in |A| : \\beta^-(m) \\leq 0 \\leq \\beta^+(m)\\}$ (balanced positions)\n\\end{enumerate}\n\nMoreover:\n\\begin{enumerate}[(i)]\n\\item The decomposition is \\textbf{unique} up to protocol isomorphism\n\\item $A^0$ is \\textbf{maximal}: any balanced sub-arena embeds into $A^0$\n\\item \\textbf{Duality exchanges}: $(A^+)^{\\perp} = A^-$ and $(A^0)^{\\perp} = A^0$\n\\item \\textbf{Dimension additivity}: $\\dim(A) = \\dim(A^+) + \\dim(A^-) + \\dim(A^0)$\n\\end{enumerate}",
+      "line_number": 291,
+      "proof_status": "sketch_provided",
+      "dependencies": [
+        "def:ch1:path_balance",
+        "def:ch1:polarity_class"
+      ]
+    },
+    {
+      "id": "cor:ch1:three_interpretations",
+      "type": "corollary",
+      "name": "Three Fundamental Interpretations",
+      "statement_latex": "The polarization decomposition has interpretations across domains:\n\\begin{enumerate}[(a)]\n\\item \\textbf{Computation}: $A^+$ = values (data), $A^-$ = continuations (control), $A^0$ = thunks (suspension)\n\\item \\textbf{Statistics}: $A^+$ = observations (likelihood), $A^-$ = queries (inference), $A^0$ = sufficient statistics (equilibrium)\n\\item \\textbf{Physics}: $A^+$ = creation operators, $A^-$ = annihilation operators, $A^0$ = conserved quantities\n\\end{enumerate}",
+      "line_number": 320,
+      "proof_status": "interpretive",
+      "dependencies": [
+        "thm:ch1:polarization_decomp"
+      ]
+    },
+    {
+      "id": "thm:ch1:dimension_tensor",
+      "type": "theorem",
+      "name": "Dimension and Tensor",
+      "statement_latex": "For protocol arenas $A, B$:\n\\begin{enumerate}[(a)]\n\\item \\textbf{(Additivity)} $\\dim(A \\otimes B) = \\dim(A) + \\dim(B)$\n\\item \\textbf{(Duality)} $\\dim(A^{\\perp}) = \\dim(A)$\n\\item \\textbf{(Bound)} $\\dim(A \\multimap B) \\geq \\max(\\dim(A), \\dim(B))$\n\\item \\textbf{(Decomposition)} $\\dim(A) = \\dim(A^+) + \\dim(A^-) + \\dim(A^0)$\n\\end{enumerate}",
+      "line_number": 345,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:dimension"
+      ]
+    },
+    {
+      "id": "cor:ch1:dimension_complexity",
+      "type": "corollary",
+      "name": "Dimension and Computational Complexity",
+      "statement_latex": "\\begin{enumerate}[(a)]\n\\item Protocols with $\\dim(P) = O(\\log n)$ admit polynomial-time strategies\n\\item Protocols with $\\dim(P) = O(n)$ correspond to $\\mathbf{PSPACE}$\n\\item Exponential-time problems have $\\dim(P) = \\Theta(2^n)$\n\\end{enumerate}",
+      "line_number": 357,
+      "proof_status": "interpretive",
+      "dependencies": [
+        "thm:ch1:dimension_tensor"
+      ]
+    },
+    {
+      "id": "thm:ch1:trace_properties",
+      "type": "theorem",
+      "name": "Trace Properties",
+      "statement_latex": "The trace $\\Tr^A_B: \\Prot(A \\otimes X, B \\otimes X) \\to \\Prot(A, B)$ satisfies:\n\\begin{enumerate}[(a)]\n\\item \\textbf{(Naturality)} $\\Tr$ is natural in $A$ and $B$\n\\item \\textbf{(Dinaturality)} $\\Tr$ is dinatural in $X$\n\\item \\textbf{(Yanking)} $\\Tr^A_B(\\gamma \\otimes \\id_X) = \\gamma$ for $\\gamma: A \\to B$\n\\item \\textbf{(Superposition)} $\\Tr^{A \\otimes C}_{B \\otimes D}(f \\otimes g) = \\Tr^A_B(f) \\otimes \\Tr^C_D(g)$\n\\item \\textbf{(Vanishing)} $\\Tr^A_B(\\Tr^{A'}_{B'}(h)) = \\Tr^{A \\otimes A'}_{B \\otimes B'}(h')$ for appropriate $h'$\n\\end{enumerate}",
+      "line_number": 386,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:trace_op"
+      ]
+    },
+    {
+      "id": "cor:ch1:traced_monoidal",
+      "type": "corollary",
+      "name": "$\\Prot$ is Traced Monoidal",
+      "statement_latex": "$(\\Prot, \\otimes, \\mathbf{1}, \\Tr)$ is a traced symmetric monoidal category in the sense of Joyal-Street-Verity.",
+      "line_number": 399,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:trace_properties"
+      ]
+    },
+    {
+      "id": "thm:ch1:fixed_points",
+      "type": "theorem",
+      "name": "Fixed Points via Trace",
+      "statement_latex": "Every morphism $f: A \\to A$ has a least fixed point:\n\\[\n\\mu f = \\Tr^{\\mathbf{1}}_A(f): \\mathbf{1} \\to A\n\\]\ncharacterized by: $\\mu f = f \\circ \\mu f$ and for any $g$ with $g = f \\circ g$, we have $g = \\mu f \\circ h$ for some $h$.\n\nMoreover, fixed points are \\textbf{constructive}: $\\mu f$ is computed by iterating $f$ until stabilization (guaranteed by well-foundedness).",
+      "line_number": 403,
+      "proof_status": "TODO",
+      "dependencies": [
+        "thm:ch1:trace_properties"
+      ]
+    },
+    {
+      "id": "thm:ch1:goi_correspondence",
+      "type": "theorem",
+      "name": "Geometry of Interaction Correspondence",
+      "statement_latex": "There is an isomorphism between:\n\\begin{enumerate}[(a)]\n\\item Traced protocols in $\\Prot$\n\\item Girard's Geometry of Interaction (GoI) proof nets\n\\end{enumerate}\nsuch that:\n\\begin{itemize}\n\\item Protocol composition corresponds to proof net cut-elimination\n\\item Trace corresponds to contracting tensor links (feedback wires)\n\\item Dimension corresponds to proof complexity (number of alternations)\n\\end{itemize}",
+      "line_number": 421,
+      "proof_status": "TODO",
+      "dependencies": [
+        "thm:ch1:trace_properties"
+      ]
+    },
+    {
+      "id": "cor:ch1:linear_logic_realization",
+      "type": "corollary",
+      "name": "Protocols Realize Linear Logic",
+      "statement_latex": "Every linear logic proof corresponds to a unique protocol (up to isomorphism), and vice versa. Cut-elimination in logic = protocol simplification.",
+      "line_number": 437,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:goi_correspondence"
+      ]
+    },
+    {
+      "id": "thm:ch1:depolarization_monoidal",
+      "type": "theorem",
+      "name": "Depolarization is Symmetric Monoidal",
+      "statement_latex": "$\\mathcal{D}: \\Prot \\to \\Set$ is a symmetric monoidal functor:\n\\begin{enumerate}[(a)]\n\\item $\\mathcal{D}(\\mathbf{1}) = \\{*\\}$ (singleton)\n\\item $\\mathcal{D}(P \\otimes Q) \\cong \\mathcal{D}(P) \\times \\mathcal{D}(Q)$ (tensor becomes product)\n\\item $\\mathcal{D}$ preserves all limits\n\\end{enumerate}\n\nMoreover, $\\mathcal{D}$ has a full and faithful left adjoint:\n\\[\n\\mathcal{S}: \\Set \\to \\Prot\n\\]\nsending sets to sampling protocols (Example \\ref{ex:ch1:basic_arenas}(c)).",
+      "line_number": 453,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:depolarization"
+      ]
+    },
+    {
+      "id": "cor:ch1:set_embedding",
+      "type": "corollary",
+      "name": "Set Theory Embeds into Protocol Theory",
+      "statement_latex": "$\\Set$ embeds fully and faithfully into $\\Prot$ via $\\mathcal{S}$. Every set is a protocol (sampling), every function is a protocol morphism.",
+      "line_number": 470,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:depolarization_monoidal"
+      ]
+    },
+    {
+      "id": "thm:ch1:depolarization_forgets",
+      "type": "theorem",
+      "name": "What Depolarization Forgets",
+      "statement_latex": "The functor $\\mathcal{D}$ is \\textbf{not} full or faithful. Specifically:\n\\begin{enumerate}[(a)]\n\\item \\textbf{(Non-injectivity)} Distinct protocols can have identical depolarizations: call-by-value and call-by-name both depolarize to the same function space\n\\item \\textbf{(Non-surjectivity)} Not every function $\\mathcal{D}(P) \\to \\mathcal{D}(Q)$ lifts to a protocol morphism: some functions violate causality (output before input)\n\\item \\textbf{(Complexity loss)} Protocols with vastly different computational complexity can have identical depolarizations\n\\end{enumerate}",
+      "line_number": 474,
+      "proof_status": "TODO",
+      "dependencies": [
+        "thm:ch1:depolarization_monoidal"
+      ]
+    },
+    {
+      "id": "thm:ch1:tensor_vs_product",
+      "type": "theorem",
+      "name": "Tensor vs. Cartesian Product",
+      "statement_latex": "The tensor $P \\otimes Q$ and cartesian product $P \\times Q$ are \\textbf{distinct} in general:\n\\begin{enumerate}[(a)]\n\\item $P \\otimes Q$ represents simultaneous independent interaction\n\\item $P \\times Q$ represents sequential interaction with result pairing\n\\item $\\mathcal{D}(P \\otimes Q) = \\mathcal{D}(P \\times Q)$ (indistinguishable in set theory)\n\\item But $\\dim(P \\otimes Q) = \\dim(P) + \\dim(Q)$ while $\\dim(P \\times Q) = \\max(\\dim(P), \\dim(Q))$\n\\end{enumerate}",
+      "line_number": 507,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:cartesian_product",
+        "thm:ch1:dimension_tensor"
+      ]
+    },
+    {
+      "id": "cor:ch1:cartesian_closed",
+      "type": "corollary",
+      "name": "Cartesian Closed Structure",
+      "statement_latex": "$\\Prot$ is cartesian closed with respect to $\\times$:\n\\[\n\\Prot(P \\times Q, R) \\cong \\Prot(P, Q \\Rightarrow R)\n\\]\nwhere $Q \\Rightarrow R$ is the function space (Example \\ref{ex:ch1:basic_arenas}(d)).\n\nBut $\\Prot$ is \\emph{also} $*$-autonomous with respect to $\\otimes$. This dual structure---both cartesian and $*$-autonomous---is what makes protocol theory expressive.",
+      "line_number": 519,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:tensor_vs_product",
+        "thm:ch1:star_autonomous"
+      ]
+    },
+    {
+      "id": "thm:ch1:master_embedding",
+      "type": "theorem",
+      "name": "Master Embedding Theorem",
+      "statement_latex": "For any category $\\mathcal{C}$ satisfying:\n\\begin{enumerate}[(i)]\n\\item $\\mathcal{C}$ has finite products and coproducts\n\\item $\\mathcal{C}$ is cartesian closed\n\\item $\\mathcal{C}$ has a natural numbers object (NNO)\n\\end{enumerate}\nthere exists a full and faithful functor:\n\\[\n\\Phi_{\\mathcal{C}}: \\mathcal{C} \\to \\Prot\n\\]\npreserving all limits, colimits, and exponentials.\n\nMoreover, if $\\mathcal{C}$ has additional structure:\n\\begin{enumerate}[(a)]\n\\item \\textbf{(Topology)} If $\\mathcal{C} = \\Top$, then $\\Phi$ preserves continuous maps and convergence\n\\item \\textbf{(Measure)} If $\\mathcal{C} = \\Meas$, then $\\Phi$ preserves measurable functions and integration\n\\item \\textbf{(Algebra)} If $\\mathcal{C} = \\mathbb{T}\\text{-}\\cat{Alg}$ for algebraic theory $\\mathbb{T}$, then $\\Phi$ preserves operations and equations\n\\end{enumerate}",
+      "line_number": 533,
+      "proof_status": "sketch_provided",
+      "dependencies": [
+        "thm:ch1:depolarization_monoidal",
+        "thm:ch1:star_autonomous"
+      ]
+    },
+    {
+      "id": "cor:ch1:everything_is_protocol",
+      "type": "corollary",
+      "name": "Everything is a Protocol",
+      "statement_latex": "Every mathematical structure---sets, topological spaces, measure spaces, groups, rings, vector spaces---has a canonical protocol representation. Mathematics is the study of protocols.",
+      "line_number": 570,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:master_embedding"
+      ]
+    },
+    {
+      "id": "thm:ch1:universal_char",
+      "type": "theorem",
+      "name": "Universal Characterization",
+      "statement_latex": "The category $\\Prot$ is characterized uniquely (up to equivalence) as:\n\n\\textbf{The initial $*$-autonomous traced symmetric monoidal category with:}\n\\begin{enumerate}[(i)]\n\\item An involutive duality $(-)^{\\perp}$ satisfying $(A^{\\perp})^{\\perp} \\cong A$\n\\item A trace $\\Tr$ satisfying Joyal-Street-Verity axioms\n\\item A dimension function $\\dim: \\Prot \\to \\mathbb{N} \\cup \\{\\omega\\}$ satisfying additivity under $\\otimes$\n\\item A depolarization functor $\\mathcal{D}: \\Prot \\to \\Set$ with full and faithful left adjoint\n\\end{enumerate}\n\nThat is: any other category with these properties admits a unique (up to isomorphism) structure-preserving functor from $\\Prot$.",
+      "line_number": 576,
+      "proof_status": "TODO",
+      "dependencies": [
+        "thm:ch1:star_autonomous",
+        "thm:ch1:trace_properties",
+        "thm:ch1:dimension_tensor",
+        "thm:ch1:depolarization_monoidal"
+      ]
+    },
+    {
+      "id": "cor:ch1:protocol_inevitable",
+      "type": "corollary",
+      "name": "Protocol Theory is Inevitable",
+      "statement_latex": "Protocol theory is not an arbitrary choice of foundation---it is the \\textbf{unique} foundation satisfying natural requirements for interactive computation. You cannot choose the axioms differently and get something else; the structure is mathematically determined.",
+      "line_number": 592,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:universal_char"
+      ]
+    },
+    {
+      "id": "thm:ch1:coherence",
+      "type": "theorem",
+      "name": "Coherence for $\\Prot$",
+      "statement_latex": "In $\\Prot$, every diagram built from canonical isomorphisms commutes. Specifically:\n\\begin{enumerate}[(a)]\n\\item \\textbf{(Mac Lane)} All compositions of associators, unitors, and symmetries commute\n\\item \\textbf{(Kelly-Laplaza)} The duality pairings satisfy yanking identities\n\\item \\textbf{(Trace)} All trace naturality and dinaturality diagrams commute\n\\end{enumerate}\n\nConsequently, protocol morphisms are unique up to canonical isomorphism: if $f, g: P \\to Q$ differ only by canonical isomorphisms, then $f = g$ in the quotient by canonical isomorphisms.",
+      "line_number": 610,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:canonical_isos"
+      ]
+    },
+    {
+      "id": "cor:ch1:equality_decidable",
+      "type": "corollary",
+      "name": "Equality is Decidable",
+      "statement_latex": "Equality of protocol morphisms (up to canonical isomorphisms) is decidable: reduce both sides to normal form using coherence, then compare syntactically.",
+      "line_number": 623,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:coherence"
+      ]
+    },
+    {
+      "id": "thm:ch1:confluence_termination",
+      "type": "theorem",
+      "name": "Confluence and Termination",
+      "statement_latex": "The protocol rewrite system is:\n\\begin{enumerate}[(a)]\n\\item \\textbf{(Terminating)} Every rewrite sequence eventually reaches a normal form\n\\item \\textbf{(Confluent)} If $P \\to^* Q$ and $P \\to^* R$, then exists $S$ with $Q \\to^* S$ and $R \\to^* S$ (Church-Rosser)\n\\item \\textbf{(Unique normal forms)} Normal forms are unique up to $\\alpha$-equivalence\n\\end{enumerate}\n\nMoreover, normal forms correspond to \\textbf{geodesics} in protocol space: protocols in normal form have minimal complexity for their behavior.",
+      "line_number": 639,
+      "proof_status": "TODO",
+      "dependencies": [
+        "def:ch1:rewrite_system"
+      ]
+    },
+    {
+      "id": "cor:ch1:verification_decidable",
+      "type": "corollary",
+      "name": "Protocol Verification is Decidable",
+      "statement_latex": "To verify $P \\cong Q$ (protocol equivalence):\n\\begin{enumerate}[(i)]\n\\item Reduce $P$ and $Q$ to normal forms $P'$ and $Q'$\n\\item Check syntactic equality $P' = Q'$\n\\end{enumerate}\nThis is decidable for finite protocols and semi-decidable (c.e.) for infinite protocols.",
+      "line_number": 652,
+      "proof_status": "implied",
+      "dependencies": [
+        "thm:ch1:confluence_termination"
+      ]
+    },
+    {
+      "id": "thm:ch1:lambda_embedding",
+      "type": "theorem",
+      "name": "Lambda Calculus Embedding",
+      "statement_latex": "The simply-typed lambda calculus embeds fully and faithfully into $\\Prot$ such that:\n\\begin{enumerate}[(a)]\n\\item Types $\\tau$ become protocols $\\llbracket \\tau \\rrbracket$\n\\item Terms $\\Gamma \\vdash M: \\tau$ become morphisms $\\llbracket \\Gamma \\rrbracket \\to \\llbracket \\tau \\rrbracket$\n\\item $\\beta$-reduction corresponds to protocol refinement\n\\item $\\eta$-equality corresponds to trace yanking\n\\end{enumerate}\n\nMoreover, operational semantics (call-by-value, call-by-name, call-by-need) distinguish protocols that depolarize to the same set-theoretic function.",
+      "line_number": 665,
+      "proof_status": "TODO",
+      "dependencies": [
+        "thm:ch1:depolarization_forgets"
+      ]
+    },
+    {
+      "id": "thm:ch1:game_semantics",
+      "type": "theorem",
+      "name": "Game Semantics Correspondence",
+      "statement_latex": "Abramsky-Jagadeesan-Malacaria game semantics embeds into $\\Prot$ via:\n\\begin{itemize}\n\\item Game arenas $\\leadsto$ Protocol arenas\n\\item Player strategies $\\leadsto$ Positive-polarity protocols ($A^+$)\n\\item Opponent strategies $\\leadsto$ Negative-polarity protocols ($A^-$)\n\\item Game composition $\\leadsto$ Protocol tensor with hiding\n\\end{itemize}\n\nThe embedding is full and faithful, preserving:\n\\begin{enumerate}[(a)]\n\\item Innocent strategies $\\leftrightarrow$ Finite-dimension protocols\n\\item Winning strategies $\\leftrightarrow$ Total protocols (all negative positions have responses)\n\\item Copycat strategies $\\leftrightarrow$ Identity protocols\n\\end{enumerate}",
+      "line_number": 681,
+      "proof_status": "TODO",
+      "dependencies": [
+        "thm:ch1:polarization_decomp"
+      ]
+    },
+    {
+      "id": "cor:ch1:game_theory_enhancement",
+      "type": "corollary",
+      "name": "Game-Theoretic Foundations Enhance Protocols",
+      "statement_latex": "Protocol theory provides the computational substrate for game-theoretic foundations, answering:\n\\begin{itemize}\n\\item \\emph{What strategies exist?} (game theory)\n\\item \\emph{How do we compute them?} (protocol theory)\n\\end{itemize}",
+      "line_number": 700,
+      "proof_status": "interpretive",
+      "dependencies": [
+        "thm:ch1:game_semantics"
+      ]
+    },
+    {
+      "id": "thm:ch1:wasserstein_protocols",
+      "type": "theorem",
+      "name": "Wasserstein Protocols",
+      "statement_latex": "For stochastic protocols $P_\\mu, P_\\nu$ (protocols with probability measures on traces), the Wasserstein distance:\n\\[\nW_p(\\mu, \\nu) = \\inf_{\\pi \\in \\Pi(\\mu, \\nu)} \\mathbb{E}_{(x,y) \\sim \\pi}[d(x,y)^p]^{1/p}\n\\]\nequals the protocol refinement cost:\n\\[\nW_p(\\mu, \\nu) = \\inf_{\\rho: P_\\mu \\Rightarrow P_\\nu} \\cost(\\rho)\n\\]\nwhere cost is the expected trace transformation expense.",
+      "line_number": 710,
+      "proof_status": "TODO",
+      "dependencies": []
+    },
+    {
+      "id": "cor:ch1:ot_enhancement",
+      "type": "corollary",
+      "name": "OT Foundations Enhance Protocols",
+      "statement_latex": "Optimal transport provides the metric structure for protocols, answering:\n\\begin{itemize}\n\\item \\emph{What is the optimal coupling?} (OT theory)\n\\item \\emph{How do we sample from it?} (protocol theory)\n\\end{itemize}",
+      "line_number": 724,
+      "proof_status": "interpretive",
+      "dependencies": [
+        "thm:ch1:wasserstein_protocols"
+      ]
+    }
+  ],
+  "definitions": [
+    {
+      "id": "def:ch1:polarity",
+      "name": "Polarity",
+      "line_number": 17
+    },
+    {
+      "id": "def:ch1:arena",
+      "name": "Protocol Arena",
+      "line_number": 27
+    },
+    {
+      "id": "def:ch1:play",
+      "name": "Play",
+      "line_number": 78
+    },
+    {
+      "id": "def:ch1:strategy",
+      "name": "Strategy",
+      "line_number": 92
+    },
+    {
+      "id": "def:ch1:protocol",
+      "name": "Protocol",
+      "line_number": 105
+    },
+    {
+      "id": "def:ch1:arena_dual",
+      "name": "Arena Duality",
+      "line_number": 126
+    },
+    {
+      "id": "def:ch1:strategy_dual",
+      "name": "Strategy Duality",
+      "line_number": 153
+    },
+    {
+      "id": "def:ch1:tensor",
+      "name": "Protocol Tensor Product",
+      "line_number": 185
+    },
+    {
+      "id": "def:ch1:linear_impl",
+      "name": "Linear Implication",
+      "line_number": 217
+    },
+    {
+      "id": "def:ch1:path_balance",
+      "name": "Polarity Path Balance",
+      "line_number": 268
+    },
+    {
+      "id": "def:ch1:polarity_class",
+      "name": "Polarity Classification",
+      "line_number": 282
+    },
+    {
+      "id": "def:ch1:dimension",
+      "name": "Protocol Dimension",
+      "line_number": 335
+    },
+    {
+      "id": "def:ch1:trace_op",
+      "name": "Protocol Trace",
+      "line_number": 373
+    },
+    {
+      "id": "def:ch1:depolarization",
+      "name": "Depolarization",
+      "line_number": 445
+    },
+    {
+      "id": "def:ch1:cartesian_product",
+      "name": "Cartesian Product of Protocols",
+      "line_number": 497
+    },
+    {
+      "id": "def:ch1:canonical_isos",
+      "name": "Canonical Isomorphisms",
+      "line_number": 600
+    },
+    {
+      "id": "def:ch1:rewrite_system",
+      "name": "Protocol Rewrite System",
+      "line_number": 629
+    }
+  ],
+  "examples": [
+    {
+      "id": "ex:ch1:basic_arenas",
+      "name": "Fundamental Arenas",
+      "line_number": 54
+    }
+  ],
+  "statistics": {
+    "total_theorems": 23,
+    "total_corollaries": 14,
+    "total_definitions": 17,
+    "total_examples": 1,
+    "theorems_with_proofs": 2,
+    "theorems_todo": 21
+  }
+}
