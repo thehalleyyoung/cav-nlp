@@ -82,9 +82,9 @@ def ProtocolMorphism.id (P : Protocol) : ProtocolMorphism P P where
   map_initial := rfl
   map_le _ _ h := h
   map_polarity _ := rfl
-  map_plays _ h := by 
-    rw [List.map_id']
-    exact h
+  map_plays p h := by 
+    convert h
+    exact List.map_id p
 
 /-- Composition of protocol morphisms -/
 def ProtocolMorphism.comp {P Q R : Protocol} 
@@ -99,8 +99,9 @@ def ProtocolMorphism.comp {P Q R : Protocol}
     unfold Function.comp
     rw [g.map_polarity, f.map_polarity]
   map_plays p h := by
-    have : List.map (g.map ∘ f.map) p = List.map g.map (List.map f.map p) := List.map_map _ _ _
-    rw [this]
+    have eq : List.map (g.map ∘ f.map) p = List.map g.map (List.map f.map p) := by
+      rw [← List.map_map]
+    rw [eq]
     exact g.map_plays _ (f.map_plays _ h)
 
 -- ====================
